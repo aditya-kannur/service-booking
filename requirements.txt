@@ -2,6 +2,8 @@ fastapi
 uvicorn
 sqlalchemy
 psycopg[binary]
-alembic
 pydantic-settings
-redis
+alembic
+pwdlib[argon2]
+PyJWT
+email-validator

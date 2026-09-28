@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.database import SessionLocal
 from app.db.models.user import User
+from app.dependencies.auth import get_db
 from app.schemas.auth import (
     LoginRequest,
     RegisterRequest,
@@ -16,16 +16,10 @@ from app.services.auth import (
 )
 
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-
-def get_db():
-    db = SessionLocal()
-
-    try:
-        yield db
-    finally:
-        db.close()
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
 
 
 @router.post(
@@ -44,12 +38,6 @@ def register(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered",
-        )
-
-    if data.role not in {"customer", "provider"}:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid role",
         )
 
     user = User(
@@ -71,7 +59,10 @@ def register(
     }
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+)
 def login(
     data: LoginRequest,
     db: Session = Depends(get_db),

@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -5,7 +7,7 @@ class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: str = "customer"
+    role: Literal["customer", "provider"] = "customer"
 
 
 class LoginRequest(BaseModel):
